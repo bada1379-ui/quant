@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "engine": "V5.4 LIVE SIGNAL ENGINE",
+  "generated_at_kst": null,
+  "signal_week_end": null,
+  "rules": {
+    "active_etfs": 16,
+    "max_positions": 6,
+    "hard_stop_pct": 5.0,
+    "same_theme_max": 1,
+    "macd_mode": "loose",
+    "rsi_method": "sma",
+    "kofr_parking": true
+  },
+  "success_count": 0,
+  "errors": [],
+  "candidates_ranked": [],
+  "items": []
+}
