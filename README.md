@@ -1,37 +1,61 @@
-# ETF Quant LIVE v2
+# ETF Quant LIVE · ACTIVE12 FINAL OOS
 
-V5.4 신호엔진 + 실제 운용 대시보드를 한 GitHub Pages 앱으로 묶은 버전입니다.
+## 최종 동결 전략
+- ACTIVE 12
+- V5.4 BOTH (TREND + BOTTOM)
+- 최대 6슬롯
+- 고정 -5% hard stop
+- 동적교체 없음
+- 남는 자금 KOFR
+- 완료주봉 다음 실제 거래일 시가 실행
+- 정상 실행시점을 놓친 신규 BUY는 추격하지 않음
 
-## 핵심 구조
-- GitHub Actions가 매주 금요일 18:17 KST에 16개 ETF 최신 완료주봉 신호를 자동 계산합니다.
-- 토요일 10:17 KST에 데이터 지연 대비 재계산합니다.
-- 휴대폰 앱은 `data/latest_signals.json`을 읽어 매수/매도/보유/KOFR 주문표를 만듭니다.
-- 실제 주문은 증권사에서 사람이 최종 확인 후 실행합니다.
-- 계좌금액/보유종목/거래기록은 브라우저 localStorage에만 저장되며 GitHub에 올라가지 않습니다.
+## ACTIVE 12
+1. 069500 KODEX 200
+2. 229200 KODEX 코스닥150
+3. 133690 TIGER 미국나스닥100
+4. 360750 TIGER 미국S&P500
+5. 245340 TIGER 미국다우존스30
+6. 466920 SOL 조선TOP3플러스
+7. 449450 PLUS K방산
+8. 487240 KODEX AI전력핵심설비
+9. 305540 TIGER 2차전지테마
+10. 139260 TIGER 200 IT
+11. 157500 TIGER 200 증권
+12. 091180 KODEX 자동차
 
-## V5.4 일치 규칙
-- ACTIVE 16
-- 최대 6슬롯 (LIVE 기본)
-- hard stop -5%
-- TREND: 완료주봉 20주선 이탈 -> 다음 거래일 시가 매도
-- BOTTOM: 완료주봉 20주선 도달 -> 다음 거래일 시가 50% 익절
-- BOTTOM runner: 완료주봉 20주선 이탈 -> 다음 거래일 시가 잔여 매도
-- 신규 후보: TREND 우선, 이후 BOTTOM / strength 내림차순
-- BATTERY(305540/305720) 동일테마 최대 1
-- 일반 동적교체 없음
-- 잔여자금 KOFR
+## 중복 제거 확정
+- 091160 KODEX 반도체 제외 → TIGER 200 IT 유지
+- 305720 KODEX 2차전지산업 제외 → TIGER 2차전지테마 유지
+- 458730 TIGER 미국배당다우존스 제외 → 미국다우존스30 유지
+- 465580 ACE 미국빅테크TOP7 Plus 제외 → 미국나스닥100 유지
+- 철강 재편입 없음
 
-## 기존 quant 저장소 업그레이드
-1. ZIP을 압축 해제합니다.
-2. GitHub `quant` 저장소 -> Add file -> Upload files.
-3. 압축 해제된 폴더 안의 **모든 파일과 폴더**를 드래그합니다. `.github`, `data` 폴더도 포함합니다.
-4. Commit changes 합니다.
-5. Settings -> Pages -> Build and deployment -> Source를 **GitHub Actions**로 변경합니다.
-6. Actions 탭 -> `ETF Quant LIVE v2 - Weekly Signals & Pages` -> Run workflow를 한 번 실행합니다.
-7. 초록색 성공 후 기존 주소 `https://bada1379-ui.github.io/quant/`를 새로고침합니다.
+## 2026-08-17 ACTIVE12 최종 재검증
+- BOTH + 6슬롯 + KOFR
+- CAGR: 12.661517%
+- MDD: -25.421339%
+- MAR: 0.498066
+- 완료거래: 305
+- 최종 현금/KOFR 비중: 32.346796%
 
-## 주의
-- GitHub Pages는 Python을 직접 서버에서 실행하지 않습니다. Python 신호 계산은 GitHub Actions runner에서 수행되고 결과 JSON을 Pages에 배포합니다.
-- GitHub 예약 workflow는 약간 지연될 수 있습니다. 앱에는 실제 생성 시각과 기준 주봉 날짜가 표시됩니다.
-- public 저장소에서는 60일 동안 저장소 활동이 전혀 없으면 scheduled workflow가 비활성화될 수 있습니다. 이 workflow는 정상 실행 때 신호 history를 commit하도록 구성했습니다.
-- 신호 계산 16개 중 하나라도 실패하면 `latest_signals.json`을 새 결과로 덮어쓰지 않고 workflow가 실패하게 해 오래된 정상 신호를 보존합니다.
+비교 기준 ACTIVE16은 CAGR 약 12.84%, MDD 약 -25.93%, MAR 약 0.495였습니다. 중복 4종 제거 후 CAGR은 거의 유지되고 MDD와 MAR가 소폭 개선되어 ACTIVE12를 최종 채택했습니다.
+
+## LIVE 안전장치
+- 12/12 데이터 계산 성공일 때만 신호 갱신
+- 12개 ETF 최신 데이터 종가일 불일치 시 갱신 중단
+- 전략 ID 불일치 시 앱이 신호 로드를 거부
+- 토요일 10:17 KST 자동 확정 계산
+- 정상 다음 거래일 시가를 놓친 BUY는 기본 잠금
+- 실제 체결가 입력 시 실제 가격 기준 수량 재계산
+- 이전 ACTIVE16 신호/주문표는 승계하지 않음
+- 과거 백업을 불러와도 다른 전략 ID의 신호는 제거
+- 계좌 상태는 브라우저 localStorage에만 저장되며 PC/휴대폰 자동 동기화 없음
+
+## 실전 OOS 기준
+- 기준원금: 20,000,000원
+- 수익 출금 기본값: 없음(복리)
+- 추가 입금: OOS 검증기간 동안 가급적 없음
+- 실제 주문 자동전송 없음: 증권사에서 직접 주문 후 앱에 체결 반영
+
+백테스트 수치는 과거 검증 결과이며 미래 성과를 보장하지 않습니다.
