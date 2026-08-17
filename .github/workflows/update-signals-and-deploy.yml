@@ -1,14 +1,13 @@
-name: ETF Quant LIVE v2 - Weekly Signals & Pages
+name: ETF Quant LIVE ACTIVE12 FINAL OOS - Weekly Signals & Pages
 
 on:
   workflow_dispatch:
-
   schedule:
-    # 한국시간 금요일 18:17 - 장 마감 후 1차 신호 계산
+    # 금요일 저녁 예비 계산
     - cron: '17 18 * * 5'
       timezone: 'Asia/Seoul'
 
-    # 한국시간 토요일 10:17 - 데이터 지연 대비 재계산
+    # 토요일 오전 최종 확인
     - cron: '17 10 * * 6'
       timezone: 'Asia/Seoul'
 
@@ -54,7 +53,11 @@ jobs:
 
           if ! git diff --cached --quiet; then
             git commit -m "Update weekly ETF signals"
-            git push
+
+            if ! git push; then
+              git pull --rebase origin main
+              git push
+            fi
           fi
 
       - name: Configure GitHub Pages
